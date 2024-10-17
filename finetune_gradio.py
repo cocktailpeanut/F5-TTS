@@ -468,8 +468,12 @@ def calculate_train(name_project,batch_size_type,max_samples,learning_rate,num_w
     duration_list = data['duration']
     samples = len(duration_list)
 
-    gpu_properties = torch.cuda.get_device_properties(0)
-    total_memory = gpu_properties.total_memory / (1024 ** 3)  
+    if torch.cuda.is_available():
+        gpu_properties = torch.cuda.get_device_properties(0)
+        total_memory = gpu_properties.total_memory / (1024 ** 3)  
+    elif torch.backends.mps.is_available():
+        total_memory = torch.mps.current_allocated_memory() / (1024 ** 3)
+
     
     if batch_size_type=="frame":
        batch = int(total_memory * 0.5)
